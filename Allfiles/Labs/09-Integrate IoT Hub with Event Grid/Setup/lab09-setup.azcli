@@ -1,0 +1,13 @@
+#!/bin/bash
+
+YourID="{YOUR-ID}"
+RGName="AZ-220-RG"
+IoTHubName="AZ-220-HUB-$YourID"
+
+Location="{YOUR-LOCATION}"
+
+# create resource group
+az group create --name $RGName --location $Location -o table
+
+# create IoT Hub
+az iot hub create --name $IoTHubName -g $RGName --sku S1 --location $Location -o table

@@ -8,7 +8,11 @@ lab:
 
 ## Lab Scenario
 
-You are an Azure IoT Developer for a leading gourmet cheese company named Contoso. You need to prepare the work environment that you will use to develop your IoT solution, on the Azure cloud side as well as your local device environment. Your team has decided to use Visual Studio Code as the primary coding tool for device management.
+You are an Azure IoT Developer for a leading gourmet cheese company named Contoso.
+
+Contoso's Chief Technology Officer has conducted an evaluation of the business opportunity represented by IoT and has concluded that Contoso can realize significant benefits by implementing an IoT solution. They selected Microsoft Azure IoT based on these evaluations.
+
+To get started, you need to become familiar with the Azure tools.
 
 ## In This Lab
 
@@ -31,7 +35,7 @@ Although we commonly refer to Azure as a 'cloud', it is actually a web portal th
 
     When you log into Azure you will arrive at the Azure portal. The Azure portal provides you with a customizable UI that you can use to access your Azure resources.
 
-1. In the upper left corner of the portal window, to open the portal menu, click the hamburger menu icon.
+1. In the upper left corner of the portal window, to open the Azure portal menu, click the hamburger menu icon.
 
     At the top of the portal menu, you should see a section containing four menu options:
 
@@ -43,7 +47,7 @@ Although we commonly refer to Azure as a 'cloud', it is actually a web portal th
 
     The bottom section of the portal menu is a **FAVORITES** section that can be customized to show your favorite, or most commonly used, resources. Later in this lab, you will learn how to customize this default list of common services to make it a list of your own favorites.
 
-1. On the portal menu, to display the **Home** page, click **Home**.
+1. On the Azure portal menu, to display the **Home** page, click **Home**.
 
 1. On the home page, to display a map of data center regions, under **Azure services**, click **Service Health**.
 
@@ -59,7 +63,7 @@ Although we commonly refer to Azure as a 'cloud', it is actually a web portal th
 
 #### Task 2: Explore the Azure Service options
 
-1. Open the portal menu, and then click **All services**.
+1. Open the Azure portal menu, and then click **All services**.
 
     The _All services_ page provides you with a few different viewing options and access to all of the services that Azure offers in both PaaS and IaaS. The first time that you open the _All services_ page, you will see the _Overview_ page. This view is accessible from the left side menu.
 
@@ -89,7 +93,7 @@ Although we commonly refer to Azure as a 'cloud', it is actually a web portal th
 
     Use the same process to add the following services to your favorites: **Device Provisioning Services**, **Function App**, **Stream Analytics jobs**, and **Azure Cosmos DB**.
 
-    > [!NOTE] You can remove a service from the list of your favorite services by clicking the star of a selected service.
+    > **Note**:  You can remove a service from the list of your favorite services by clicking the star of a selected service.
 
 1. On the left side of the _All services_ page, under _Categories_, click **General**.
 
@@ -134,6 +138,7 @@ Although we commonly refer to Azure as a 'cloud', it is actually a web portal th
 ### Exercise 2: Create an Azure Dashboard and Resource Group
 
 On the Azure portal, dashboards are used to present a customized view of your resources. Information is displayed through the use of tiles which can be arranged and sized to help you organize your resources in useful ways. You can create many different dashboards that provide different views and serve different purposes.
+
 Each tile that you place on your dashboard exposes one or more of your resources. In addition to tiles that expose the data of an individual resource, you can create a tile for something called a resource group.
 
 A resource group is a logical group that contains related resources for a project or application. The resource group can include all the resources for the solution, or only those resources that you want to manage as a group. You decide how you want to allocate resources to resource groups based on what makes the most sense for your organization. Generally, add resources that share the same lifecycle to the same resource group so you can easily deploy, update, and delete them as a group.
@@ -149,7 +154,7 @@ In the following tasks, you will:
 
     You can use the following link to open the Azure portal: [Azure portal](https://portal.azure.com)
 
-1. On the portal menu, click **Dashboard**.
+1. On the Azure portal menu, click **Dashboard**.
 
 1. On the _Dashboard_ page, click **+ New dashboard**
 
@@ -165,7 +170,7 @@ In the following tasks, you will:
 
 #### Task 2: Create a Resource Group and add a Resource Group tile to your Dashboard
 
-1. On the portal menu, click **Resource groups**
+1. On the Azure portal menu, click **Resource groups**
 
     This blade displays all of the resource groups that you have created using your Azure subscription(s). If you are just getting started with Azure, you probably don't have any resource groups yet.
 
@@ -206,7 +211,7 @@ In the following tasks, you will:
 
 1. In the list of named resource groups, click the box to the left of the **AZ-220-RG** resource group that your just created.
 
-    > [!NOTE] You don't want to open the resource group in a new blade, you just want to select it (check mark on the left).
+    > **Note**:  You don't want to open the resource group in a new blade, you just want to select it (check mark on the left).
 
 1. On the right side of the screen, click the ellipsis (...) corresponding to your resource group, and then click **Pin to dashboard**
 

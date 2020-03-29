@@ -8,38 +8,41 @@ lab:
 
 ## Lab Scenario
 
-Suppose you manage a packaging facility. Packages are assembled for shipping, then placed on a conveyor belt that takes the packages and drops them off in mailing bins. Your metric for success is the number of packages leaving the conveyor belt.
+Contoso Management is impressed with your implementation of automatic device enrollment using DPS. They are now asking you to begin exploring an IoT solution for a business-specific issue associated with product packaging and shipping.
 
-The conveyor belt is a critical link in your process, and is monitored for vibration. The conveyor belt has three speeds: stopped, slow, and fast. The number of packages being delivered at slow speed is less than at the faster speed, though the vibration is also less at the slower speed. If the vibration becomes excessive, the conveyor belt has to be stopped and inspected.
+A key component of the Contoso cheese-making business is the packaging and shipping of cheese to customers. To maximize cost efficiency, Contoso operates an on-premises packaging facility. The workflow is straightforward - packages are assembled for shipping, then placed on a conveyor belt system that takes the packages and drops them off at mailing bins. The metric for success is the number of packages leaving the conveyor belt system during a given time period (typically a work shift).
 
-There are a number of different types of vibration. Forced vibration is vibration caused by an external force. Such a force as the broken wheel example, or a weighty package placed improperly on the conveyor belt. There's also increasing vibration, which might happen if a design limit is exceeded.
+The conveyor belt system is a critical link in this process, and is visually monitored to ensure that packages are delivered correctly. The system has three operator controlled speeds: stopped, slow, and fast. Naturally, the number of packages being delivered at the slow speed is less than at the faster speed. However, the vibration level of the conveyor belt system is also less at the slower speed. In addition, high vibration levels are know to accelerate wear-and-tear of the system and can cause packages to fall from the conveyor. If vibration becomes excessive, the conveyor belt must be stopped to allow for inspection so that more serious failures are avoided.
 
-Vibration is typically measured as an acceleration (meters per second squared, m/s2).
+The primary goal for your solution will be to implement a form of preventive maintenance based on vibration levels, which can be used to detect that something is wrong before serious system damage occurs. 
 
-The ultimate goal here is preventive maintenance. Detect that something is wrong, before any damage is caused.
+> **Note**: **Preventive maintenance** (sometimes called preventative maintenance or predictive maintenance) is an equipment maintenance program that schedules maintenance activities to be performed while the equipment is operating normally. The intent of this approach is to avoid unexpected breakdowns that often incur costly disruptions.
 
-It's not always easy to detect abnormal vibration levels. For this reason, you are looking to Azure IoT Hub to detect data anomalies. You plan to have a vibration detection sensor on the conveyor belt, sending continuous telemetry to an IoT Hub. The IoT Hub will use Azure Stream Analytics, and a built-in ML model, to give you advance warning of vibration anomalies. You also plan to archive all the telemetry data, just in case it's ever needed.
+It's not always easy to detect abnormal vibration levels. For this reason, you are looking into an Azure IoT solution that will help to measure vibration levels and data anomalies. Vibration sensors will be attached to the conveyor belt at various locations, and you will use IoT devices to send telemetry to an IoT hub. The IoT hub will use Azure Stream Analytics, and a built-in Machine Learning (ML) model, to alert you to vibration anomalies in real time. You also plan to archive all of the telemetry data so that it can be further analyzed in the future.
 
-You decide to build a prototype of the planned system, initially using simulated telemetry.
+You decide to prototype the solution using simulated telemetry from a single IoT device.
+
+To simulate the vibration data in a realistic manner, you work with one of the engineers to understand a little bit about what causes the vibrations. It turns out that there are a number of different types of vibration that contribute to the overall vibration level. For example, a "force vibration" could be introduced by a broken guide wheel or an especially heavy load placed improperly on the conveyor belt. There's also an "increasing vibration", that can be introduced when a system design limit (such as speed or weight) is exceeded. With a little help, you able to develop the code for a simulated IoT device that produces an acceptable representation of vibration data and will generate anomalies.
+
+The following resources will be created:
+
+![Lab 7 Architecture](media/LAB_AK_07-architecture.png)
 
 ## In This Lab
 
-In this lab, you will
+In this lab, you will complete the following activities:
 
-This lab includes:
-
-* Verify Lab Prerequisites
+* Verify that the lab prerequisites are met (that you have the required Azure resources)
 * Create an Azure IoT Hub, and a device ID using Azure CLI
 * Create a C# app to send device telemetry to the IoT Hub, using Visual Studio code
 * Create a message route, through to blob storage, using the Azure portal
-* Create a second message route, through to an Azure Analytics job, using the Azure portal
-* Create an Azure Function to identify anomalies.
+* Create a second message route, through to an Azure Stream Analytics job, using the Azure portal
 
 ## Lab Instructions
 
 ### Exercise 1: Verify Lab Prerequisites
 
-This lab assumes the following resources are available:
+This lab assumes the following Azure resources are available:
 
 | Resource Type | Resource Name |
 | :-- | :-- |
@@ -47,49 +50,84 @@ This lab assumes the following resources are available:
 | IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
 | Device ID | VibrationSensorId |
 
-If the resources are unavailable, please execute the **lab-setup.azcli** script before starting the lab.
+If these resources are not available, you will need to run the **lab07-setup.azcli** script as instructed below before moving on to Exercise 2. The script file is included in the GitHub repository that you cloned locally as part of the dev environment configuration (lab 3).
 
-The **lab-setup.azcli** script is written to run in a **bash** shell environment - the easiest way to execute this is in the Azure Cloud Shell.
+The **lab07-setup.azcli** script is written to run in a **bash** shell environment - the easiest way to execute this is in the Azure Cloud Shell.
 
 1. Using a browser, open the [Azure Shell](https://shell.azure.com/) and login with the Azure subscription you are using for this course.
 
-1. To ensure the Azure Shell is using **Bash**, ensure the dropdown selected value in the top-left is **Bash**.
+    If you are prompted about setting up storage for Cloud Shell, accept the defaults.
 
-1. To upload the setup script, in the Azure Shell toolbar, click **Upload/Download files** (fourth button from the right).
+1. Verify that the Azure Cloud Shell is using **Bash**.
 
-1. In the dropdown, select **Upload** and in the file selection dialog, navigate to the **lab-setup.azcli** file for this lab. Select the file and click **Open** to upload it.
+    The dropdown in the top-left corner of the Azure Cloud Shell page is used to select the environment. Verify that the selected dropdown value is **Bash**.
+
+1. On the Azure Shell toolbar, click **Upload/Download files** (fourth button from the right).
+
+1. In the dropdown, click **Upload**.
+
+1. In the file selection dialog, navigate to the folder location of the GitHub lab files that you downloaded when you configured your development environment.
+
+    In _Lab 3: Setup the Development Environment_, you cloned the GitHub repository containing lab resources by downloading a ZIP file and extracting the contents locally. The extracted folder structure includes the following folder path:
+
+    * Allfiles
+      * Labs
+          * 07-Device Message Routing
+            * Setup
+
+    The lab07-setup.azcli script file is located in the Setup folder for lab 7.
+
+1. Select the **lab07-setup.azcli** file, and then click **Open**.
 
     A notification will appear when the file upload has completed.
 
-1. You can verify that the file has uploaded by listing the content of the current directory by entering the `ls` command.
+1. To verify that the correct file has uploaded in Azure Cloud Shell, enter the following command:
 
-1. To create a directory for this lab, move **lab-setup.azcli** into that directory, and make that the current working directory, enter the following commands:
+    ```bash
+    ls
+    ```
+
+    The `ls` command lists the content of the current directory. You should see the lab07-setup.azcli file listed.
+
+1. To create a directory for this lab that contains the setup script and then move into that directory, enter the following Bash commands:
 
     ```bash
     mkdir lab7
-    mv lab-setup.azcli lab7
+    mv lab07-setup.azcli lab7
     cd lab7
     ```
 
-1. To ensure the **lab-setup.azcli** has the execute permission, enter the following commands:
+1. To ensure that **lab07-setup.azcli** has the execute permission, enter the following command:
 
     ```bash
-    chmod +x lab-setup.azcli
+    chmod +x lab07-setup.azcli
     ```
 
-1. To edit the **lab-setup.azcli** file, click **{ }** (Open Editor) in the toolbar (second button from the right). In the **Files** list, select **lab7** to expand it and then select **lab-setup.azcli**.
+1. On the Cloud Shell toolbar, to edit the lab07-setup.azcli file, click **Open Editor** (second button from the right - **{ }**).
 
-    The editor will now show the contents of the **lab-setup.azcli** file.
+1. In the **FILES** list, to expand the lab7 folder and open the script file, click **lab7**, and then click **lab07-setup.azcli**.
 
-1. In the editor, update the values of the `YourID` and `Location` variables. Set `YourID` to your initials and todays date - i.e. **CAH121119**, and set `Location` to the location that makes sense for your resources.
+    The editor will now show the contents of the **lab07-setup.azcli** file.
 
-    > [!NOTE] The `Location` variable should be set to the short name for the location. You can see a list of the available locations and their short-names (the **Name** column) by entering this command:
+1. In the editor, update the `{YOUR-ID}` and `{YOUR-LOCATION}` assigned values.
+
+    Referencing the sample below as an example, you need to set `{YOUR-ID}` to the Unique ID you created at the start of this course - i.e. **CAH191211**, and set `{YOUR-LOCATION}` to the location that makes sense for your resources.
+
+    ```bash
+    #!/bin/bash
+
+    YourID="{YOUR-ID}"
+    RGName="AZ-220-RG"
+    IoTHubName="AZ-220-HUB-$YourID"
+
+    Location="{YOUR-LOCATION}"
+    ```
+
+    > **Note**:  The `{YOUR-LOCATION}` variable should be set to the short name for the region. You can see a list of the available regions and their short-names (the **Name** column) by entering this command:
     >
     > ```bash
     > az account list-locations -o Table
-    > ```
     >
-    > ```text
     > DisplayName           Latitude    Longitude    Name
     > --------------------  ----------  -----------  ------------------
     > East Asia             22.267      114.188      eastasia
@@ -99,19 +137,21 @@ The **lab-setup.azcli** script is written to run in a **bash** shell environment
     > East US 2             36.6681     -78.3889     eastus2
     > ```
 
-1. To save the changes made to the file and close the editor, click **...** in the top-right of the editor window and select **Close Editor**.
+1. In the top-right of the editor window, to save the changes made to the file and close the editor, click **...**, and then click **Close Editor**.
 
     If prompted to save, click **Save** and the editor will close.
 
-    > [!NOTE] You can use **CTRL+S** to save at any time and **CTRL+Q** to close the editor.
+    > **Note**:  You can use **CTRL+S** to save at any time and **CTRL+Q** to close the editor.
 
-1. To create a resource group named **AZ-220-RG**, create an IoT Hub named **AZ-220-HUB-{YourID}**, add a device with an ID of **VibrationSensorId**, and display the device connection string, enter the following command:
+1. To create the resources required for this lab, enter the following command:
 
     ```bash
-    ./lab-setup.azcli
+    ./lab07-setup.azcli
     ```
 
-    This will take a few minutes to run. You will see JSON output as each step completes.
+    This script can take a few minutes to run. You will see JSON output as each step completes.
+
+    The script will first create a resource group named **AZ-220-RG** and an IoT Hub named **AZ-220-HUB-{YourID}**. If they already exist, a corresponding message will be displayed. The script will then add a device with an ID of **VibrationSensorId** to the IoT hub and display the device connection string.
 
 1. Notice that, once the script has completed, the connection string for the device is displayed.
 
@@ -119,11 +159,11 @@ The **lab-setup.azcli** script is written to run in a **bash** shell environment
 
 1. Copy the connection string into a text document, and note that it is for the **VibrationSensorId** device.
 
-    The next step is to code the sending of telemetry messages.
+    Once you have saved the connection string to a location where you can find it easily, you will be ready to continue with the lab.
 
 ### Exercise 2: Write Code for Vibration Telemetry
 
-The key to monitoring our conveyor belt is the output of vibration telemetry. Vibration is usually measured as an acceleration (m/s^2), although sometimes it's measured in g-forces, where 1 g = 9.81 m/s^2. There are three types of vibration.
+The key to monitoring our conveyor belt is the output of vibration telemetry. Vibration is usually measured as an acceleration (m/s&#x00B2;), although sometimes it's measured in g-forces, where 1 g = 9.81 m/s&#x00B2;. There are three types of vibration.
 
 * Natural vibration, which is just the frequency a structure tends to oscillate.
 * Free vibration, which occurs when the structure is impacted, but then left to oscillate without interference.
@@ -133,31 +173,35 @@ Forced vibration is the dangerous one for our conveyor belt. Even if it starts a
 
 The code sample that you will build simulates a conveyor belt running at a range of speeds (stopped, slow, fast). The faster the belt is running, the more packages are delivered, but the greater the effects of vibration. We'll add natural vibration, based on a sine wave with some randomization. It's possible our anomaly detection system will falsely identify a spike or dip in this sine wave as an anomaly. We'll then add two forms of forced vibration. The first has the effect of a cyclic increase in vibration (see the images below). And secondly, an increasing vibration, where an additional sine wave is added, starting small but growing.
 
-We assume that our conveyor belt has just one sensor device (our simulated IoT Device). In addition to communicating vibration data, the sensor also pumps out some other data (packages delivered, ambient temperature, and similar metrics). For this lab, the additional values will be sent to a storage archive.
+During this prototype phase we assume that our conveyor belt has just one sensor device (our simulated IoT Device). In addition to communicating vibration data, the sensor also pumps out some other data (packages delivered, ambient temperature, and similar metrics). For this lab, the additional values will be sent to a storage archive.
 
-Almost all the coding in this lab will be completed during this exercise. You will be using Visual Studio Code to build the simulator code in C#.
+Almost all the coding in this lab will be completed during this exercise. You will be using Visual Studio Code to build the simulator code in C#. You will complete a small amount of SQL coding later in the lab.
 
 In this exercise, you will:
 
 * build the conveyor belt simulator
 * send telemetry messages to the IoT Hub created in the previous unit
 
-Later in this lab you will complete a small amount of SQL coding.
-
 #### Task 1: Create an App to Send Telemetry
 
-1. To use C# in Visual Studio Code, ensure both [.NET Core](https://dotnet.microsoft.com/download), and the [C# extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp) are installed.
+1. Open Visual Studio Code, and then verify that the C# Extension is installed.
 
-1. To open a terminal in Visual Studio Code, open the **Terminal** menu and click **New Terminal**.
+    You set up the development environment in lab 3 of this course, but it's worth quickly double-checking before you start building your device app. 
 
-1. In the terminal, to create a directory called "vibrationdevice" and change the current directory to that directory, enter the following commands:
+    To use C# in Visual Studio Code, both [.NET Core](https://dotnet.microsoft.com/download) and the [C# extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp) must be installed. You can open the Visual Studio Code Extensions pane using the left-side toolbar by clicking the 5th button from the top.
+
+1. On the **Terminal** menu, click **New Terminal**.
+
+    Notice the directory path indicated as part of the command prompt. You do not want to start building this project within the folder structure of a previous lab project.
+  
+1. At the terminal command prompt, to create a directory named "vibrationdevice" and change the current directory to that directory, enter the following commands:
 
    ```bash
    mkdir vibrationdevice
    cd vibrationdevice
    ```
 
-1. To create a new .NET console application. enter the following command in the terminal:
+1. To create a new .NET console application. enter the following command:
 
     ```bash
     dotnet new console
@@ -165,26 +209,36 @@ Later in this lab you will complete a small amount of SQL coding.
 
     This command creates a **Program.cs** file in your folder, along with a project file.
 
-1. In the terminal, to install the required libraries. Enter the following commands:
+1. To install the code libraries required for your device app, enter the following commands:
 
     ```bash
     dotnet add package Microsoft.Azure.Devices.Client
     dotnet add package Newtonsoft.Json
     ```
 
-1. From the **File** menu, open up the **Program.cs** file, and delete the default contents.
-
-    > [!NOTE] If you are unsure where the **Program.cs** file is located, enter the command `pwd` in the console to see the current directory.
-
-1. After you've entered the code below into the **Program.cs** file, you can run the app with the command `dotnet run`. This command will run the **Program.cs** file in the current folder.
+    You will build and test your simulated device app in the next task.
 
 #### Task 2: Add Code to Send Telemetry
 
-The following app simulates a conveyor belt, and reports vibration sensor data every two seconds.
+The simualted device app that you build in this task simulates an IoT device that is monitoring the conveyor belt. The app will simulate sensor readings and report vibration sensor data every two seconds.
 
-1. If it isn't already open in Visual Studio Code, open the **Program.cs** file for the device app.
+1. On the Visual Studio Code **File** menu, click **Open Folder**.
 
-1. Copy and paste the following code:
+    You will use the folder path listed within the Terminal command prompt to locate your project folder.
+  
+1. In the Open Folder dialog, navigate to the directory path displayed within the Terminal command prompt, click **vibrationdevice**, and then click **Select Folder**.
+
+    If you are prompted to load required assetts, click **Yes**.
+
+    The Visual Studio Code EXPLORER pane should now be open. If it is not, use the left-side toolbar to open the EXPLORER pane. You can hover your mouse pointer over the toolbar buttons to display the button names.
+
+1. In the EXPLORER pane, click **Program.cs**.
+
+1. In the code editor view, delete the default contents of the Program.cs file.
+
+    The default contents were created when you ran the `dotnet new console` command in the previous task.
+
+1. To create the code for your simulated device, paste the following code into the empty Program.cs file:
 
     ```csharp
     // Copyright (c) Microsoft. All rights reserved.
@@ -468,13 +522,17 @@ The following app simulates a conveyor belt, and reports vibration sensor data e
     }
     ```
 
-    > **Important:** Take a few minutes, and read through the comments in the code. Notice how the vibration math from the description of the scenario in the introduction has worked its way into the code. The most important section of code for learning about IoT messages, starts with the "Create two messages:" comment.
+1. Take a few minutes to review the code.
 
-1. Replace the `<your device connection string>` (line 44) with the device connection string you saved off in the previous unit. No other lines of code need to be changed.
+    > **Important:** Take a few minutes to read through the comments in the code. The most important section of code for learning about IoT messages starts with the "Create two messages:" comment. You may also be interested in seeing how the math that is used to define the conveyor belt vibration levels (described within the scenario description at the begining of this lab) has worked its way into the code.
+
+1. Replace the `<your device connection string>` (line 44) with the device connection string you saved during the previous exercise.
+
+    > **Note**: This is the only change that you are required to make to this code.
 
 1. Save the **Program.cs** file.
 
-    > [!NOTE] The code is also available in the `/labFiles` folder - remember to replace the `<your device connection string>`.
+    > **Note**:  The code is also available in the `/Starter` folder for lab 7. If you choose to use the code in the Starter folder, remember to replace the `<your device connection string>`.
 
 #### Task 3: Test your Code to Send Telemetry
 
@@ -486,36 +544,54 @@ The following app simulates a conveyor belt, and reports vibration sensor data e
 
    This command will run the **Program.cs** file in the current folder.
 
-1. You should quickly see console output, similar to the following:
+1. Console output should be displayed that is similar to the following:
 
-    ![Console Output](../../Linked_Image_Files/M99-L07-vibration-telemetry.png)
+    ```
+    Vibration sensor device app.
 
-    > [!NOTE] Green text is used to show things are working as they should and red text when bad stuff is happening. If you don't get a screen similar to this image, start by checking your device connection string.
+    Telemetry data: {"vibration":0.0}
+    Telemetry sent 10:29 AM
+    Log data: {"vibration":0.0,"packages":0,"speed":"stopped","temp":60.22}
+    Log data sent
+
+    Telemetry data: {"vibration":0.0}
+    Telemetry sent 10:29 AM
+    Log data: {"vibration":0.0,"packages":0,"speed":"stopped","temp":59.78}
+    Log data sent
+    ```
+
+    > **Note**:  In the Terminal window, green text is used to show things are working as they should and red text when bad stuff is happening. If you receive error messages, start by checking your device connection string.
 
 1. Watch the telemetry for a short while, checking that it is giving vibrations in the expected ranges.
 
-1. You can leave this app running, as it's needed for the next section.
+1. Leave this app running for the next task.
+
+    If you won't be continuing to the next task, you can enter **Ctrl-C** in the Terminal window to stop the app. You can start it again later by using the `dotnet run` command.
 
 #### Task 4: Verify the IoT Hub is Receiving Telemetry
 
-1. To verify that your IoT Hub is receiving the telemetry, open the [Azure Portal](https://portal.azure.com) and navigate to the Azure IoT Hub **AZ-220-HUB-_{YourID}_** **Overview** pane.
+In this task, you will use the Azure portal to verify that your IoT Hub is receiving telemetry.
 
-1. On the **Overview** page, scroll down to the bottom of the page where the metrics tiles are displayed.
+1. Open the [Azure Portal](https://portal.azure.com).
 
-1. Adjacent to **Show data for last**, change the time range to one hour. The **Device to cloud messages** plot should show some activity.
+1. On your Dashboard, in the **AZ-220-RG** resource group tile, click **AZ-220-HUB-_{YourID}_**.
 
-    If no activity is shown, wait a short while, as there's some latency.
+1. On the **Overview** pane, scroll down to view the metrics tiles.
+
+1. Adjacent to **Show data for last**, change the time range to one hour. 
+
+    The **Device to cloud messages** tile should be plotting some current activity. If no activity is shown, wait a short while, as there's some latency.
 
     With your device pumping out telemetry, and your hub receiving it, the next step is to route the messages to their correct endpoints.
 
 ### Exercise 3: Create a Message Route to Azure Blob Storage
 
-The architecture of our vibration monitoring system requires data be sent to two destinations: storage and analysis. Azure IoT provides a great method of directing data to the right service, through *message routing*.
+The architecture of our vibration monitoring system requires data be sent to two destinations: a storage location for archiving data, and a location for more immediate analysis. Azure IoT provides a great method of directing data to the right service, through *message routing*.
 
-In our scenario, we need create two routes:
+In our scenario, we need to create two routes:
 
-* the first route will be to storage for achiving data
-* the second route will to an Event Hub for anomoly detection
+* the first route will be to storage for archiving data
+* the second route will to an Event Hub for anomaly detection
 
 Since message routes are best built and tested one at a time, this exercise will focus on the storage route. We'll call this route the "logging" route, and it involves digging a few levels deep into the creation of Azure resources. All the features required to build this route are available in the Azure portal.
 
@@ -536,21 +612,21 @@ In this exercise, you will create and test the logging route.
 
 #### Task 1: Route the logging message to Azure storage
 
-1. In the [Azure Portal](https://portal.azure.com/), ensure the **Overview** page for the IoT Hub you created (**AZ-220-HUB-_{YourID}_**) is open.
+1. In the [Azure Portal](https://portal.azure.com/), ensure that the **Overview** pane of your IoT hub is open.
 
-1. In the left-hand menu, under **Messaging**, select **Message routing**.
+1. On the left-hand menu, under **Messaging**, click **Message routing**.
 
-1. On the **Message routing** page, ensure that **Routes** is selected.
+1. On the **Message routing** pane, ensure that the **Routes** tab is selected.
 
-1. Click **+ Add** to add the first route.
+1. To add the first route, click **+ Add**.
 
-    The **Add a route** blade is displayed.
+    The **Add a route** blade should now be displayed.
 
-1. One the **Add a route** blade, under **Name**, enter `vibrationLoggingRoute`.
+1. On the **Add a route** blade, under **Name**, enter `vibrationLoggingRoute`.
 
-1. To the right of **Endpoint**, click **+ Add endpoint**, and select **Storage** from the drop-down list.
+1. To the right of **Endpoint**, click **+ Add endpoint**, and then, in the drop-down list, click **Storage**.
 
-    The **Add a storage endpoint** pane is displayed.
+    The **Add a storage endpoint** blade is displayed.
 
 1. Under **Endpoint name**, enter `vibrationLogEndpoint`.
 
@@ -562,27 +638,31 @@ In this exercise, you will create and test the logging route.
 
     The **Create storage** pane is displayed.
 
-1. On the **Create Storage** pane, under **Name**, enter **vibrationstore** and add your initials and today's date - **vibrationstorecah191211**.
+1. On the **Create Storage** pane, under **Name**, enter **vibrationstore** and then it append with your initials and today's date - **vibrationstorecah191211**.
 
-    > [!NOTE] This field can only contain lower-case letters and numbers, must be between 3 and 24 characters, and must be unique.
+    > **Note**:  This field can only contain lower-case letters and numbers, must be between 3 and 24 characters, and must be unique.
 
 1. Under **Account kind**, select **StorageV2 (general purpose V2)**.
 
-1. Under **Performance**, select **Standard** if it is not selected.
+1. Under **Performance**, ensure that **Standard** is selected.
 
     This keeps costs down at the expense of overall performance.
 
-1. Under **Replication**, select **Locally-redundant storage (LRS)** if it is not already selected.
+1. Under **Replication**, ensure that **Locally-redundant storage (LRS)** is selected.
 
     This keeps costs down at the expense of risk mitigation for disaster recovery. In production your solution may require a more robust replication strategy.
 
-1. Under **Location**, choose the region you are using for all of your lab work.
+1. Under **Location**, select the region that you are using for the labs in this course.
 
-1. To create the storage account, click **OK**, then wait until the request is validated, then completed. Validation and creation can take a minute or two.
+1. To create the storage account, click **OK**.
 
-    Once complete, the **Create storage account** pane will close. The **Storage accounts** screen will now appear. It should have updated and show the storage account that was just created.
+1. Wait until the request is validated, and the storage account deployment has completed.
 
-1. Search for **vibrationstore**, and select the storage account you just created.
+    Validation and creation can take a minute or two.
+
+    Once complete, the **Create storage account** pane will close and the **Storage accounts** blade will be displayed. The Storage accounts blade should have updated to show the storage account that was just created.
+
+1. Search for **vibrationstore**, and then select the storage account that you just created.
 
    The **Containers** blade should appear. As this is a new storage account, there are no containers to list.
 
@@ -596,27 +676,31 @@ In this exercise, you will create and test the logging route.
 
 1. Under **Public access level**, ensure **Private (no anonymous access)** is selected.
 
-1. To create the container, click **OK**, then wait for your container to be available.
+1. To create the container, click **OK**.
 
-1. To choose the container for the solution, highlight the container in the list, and click **Select** at the bottom of the page.
+    After a moment the **Lease state** for your container will display **Available**.
 
-    You will return to the **Add a storage endpoint** pane. Note that the **Azure Storage container** has been set to the URL for the storage account and container you just created.
+1. To choose the container for the solution, click **vibrationcontainer**, and then click **Select**.
+
+    You should be returned to the **Add a storage endpoint** pane. Notice that the **Azure Storage container** has been set to the URL for the storage account and container you just created.
 
 1. Leave the **Batch frequency** and **Chunk size window** to the default values of **100**.
 
-1. Under **Encoding**, note there are two options and that **AVRO** is selected.
+1. Under **Encoding**, notice that there are two options and that **AVRO** is selected.
 
-    > [!NOTE] By default IoT Hub writes the content in Avro format, which has both a message body property and a message property. The Avro format is not used for any other endpoints. Although the Avro format is great for data and message preservation, it's a challenge to use it to query data. In comparison, JSON or CSV format is much easier for querying data. IoT Hub now supports writing data to Blob storage in JSON as well as AVRO.
+    > **Note**:  By default IoT Hub writes the content in Avro format, which has both a message body property and a message property. The Avro format is not used for any other endpoints. Although the Avro format is great for data and message preservation, it's a challenge to use it to query data. In comparison, JSON or CSV format is much easier for querying data. IoT Hub now supports writing data to Blob storage in JSON as well as AVRO.
 
-1. The final field **File name format** specifies the pattern used to write the data to files in storage. The various tokens are replace with values as the file is created.
+1. Examine the value specified in **File name format** field.
 
-1. To create the endpoint, click **Create** at the bottom of the pane. Validation and creation will take a few moments.
+    The **File name format** field specifies the pattern used to write the data to files in storage. The various tokens are replace with values as the file is created.
 
-    You should now be back at the **Add a route** blade.
+1. At the bottom of the pane, to create the endpoint, click **Create**.
 
-1. Under **Data source**, ensure **Device Telemetry Messages** is selected.
+    Validation and creation will take a few moments. Once complete, you should be back on the **Add a route** blade.
 
-1. Under **Enable route**, ensure **Enable** is selected.
+1. On the **Add a route** blade, under **Data source**, ensure that **Device Telemetry Messages** is selected.
+
+1. Under **Enable route**, ensure that **Enable** is selected.
 
 1. Under **Routing query**, replace **true** with the query below:
 
@@ -624,17 +708,19 @@ In this exercise, you will create and test the logging route.
     sensorID = "VSLog"
     ```
 
-    This ensures that messages only follow this route if the `sensorID = "VSLog"`.
+    This ensures that messages will only follow this route if the `sensorID = "VSLog"`.
 
-1. To save this route, click **Save**. Wait for the success message.
+1. To save this route, click **Save**.
 
-    Once completed, the route should be listed on the **Message routing** blade.
+    Wait for the success message. Once completed, the route should be listed on the **Message routing** blade.
+
+1. Navigate back to your Azure portal Dashboard.
 
 The next step will be to verify that the logging route is working.
 
 ### Exercise 4: Logging Route Azure Stream Analytics Job
 
-To verify that the logging route is working as expected, we will create a Stream Analytics job that routes logging messages to Blob storage.
+To verify that the logging route is working as expected, we will create a Stream Analytics job that routes logging messages to Blob storage, which can then be validated using Storage Explorer in the Azure Portal.
 
 This will enable us to verify that our route includes the following settings:
 
@@ -644,11 +730,15 @@ This will enable us to verify that our route includes the following settings:
 * **Endpoint** - vibrationLogEndpoint
 * **Enabled** - true
 
+> **Note**: It may seem odd that in this lab we are routing data to storage, and then also sending our data to storage through Azure Stream Analytics. In a production scenario, you wouldn't have both paths long-term. Instead, it is likely that the second path that we're creating here would not exist. We're using it here, in a lab environment, as a way to validate that our routing is working as expected and to show a simple implementation of Azure Stream Analytics.
+
 #### Task 1: Create the Stream Analytics Job
 
-1. In the [Azure portal], select **+ Create a resource**.
+1. On the Azure portal menu, click **+ Create a resource**.
 
-1. Search for and select `Stream Analytics job`. Click **Create**.
+1. On the **New** blade, in the **Search the Marketplace** textbox, enter **Stream Analytics job** and then click **Stream Analytics job**.
+
+1. On the **Stream Analytics job** blade, click **Create**.
 
     The **New Stream Analytics job** pane is displayed.
 
@@ -668,13 +758,15 @@ This will enable us to verify that our route includes the following settings:
 
     This lab does not require 3 units and this will reduce costs.
 
-1. To create the streaming analytics job, click **Create**.
+1. To create the Stream Analytics job, click **Create**.
 
 1. Wait for the **Deployment succeeded** message, then open the new resource.
 
     > **Tip:** If you miss the message to go to the new resource, or need to find a resource at any time, select **Home/All resources**. Enter enough of the resource name for it to appear in the list of resources.
 
-    You'll now see the empty job, showing no inputs or outputs, and a skeleton query. The next step is to populate these entries.
+1. Take a moment to examine your new Stream Analytics job.
+
+    Notice that you have an empty job, showing no inputs or outputs, and a skeleton query. The next step is to populate these entries.
 
 1. To create an input, in the left hand navigation, under **Job topology**, click **Inputs**.
 
@@ -686,27 +778,29 @@ This will enable us to verify that our route includes the following settings:
 
 1. On the **New Input** pane, under **Input alias**, enter `vibrationInput`.
 
-1. Ensure **Select IoT Hub from your subscriptions** is selected.
+1. Ensure that **Select IoT Hub from your subscriptions** is selected.
 
-1. Under **Subscription**, ensure the subscription you used to create the IoT Hub earlier is selected.
+1. Under **Subscription**, ensure that the subscription you used to create the IoT Hub earlier is selected.
 
 1. Under **IoT Hub**, select the IoT Hub you created at the beginning of the course labs, **AZ-220-HUB-_{YourID}_**.
 
-1. Under **Endpoint**, ensure **Messaging** is selected.
+1. Under **Endpoint**, ensure that **Messaging** is selected.
 
-1. Under **Shared access policy name**, ensure **iothubowner** is selected.
+1. Under **Shared access policy name**, ensure that **iothubowner** is selected.
 
-    > [!NOTE] The **Shared access policy key** is populated and read-only.
+    > **Note**:  The **Shared access policy key** is populated and read-only.
 
-1. Under **Consumer group**, ensure **$Default** is selected.
+1. Under **Consumer group**, ensure that **$Default** is selected.
 
-1. Under **Event serialization format**, ensure **JSON** is selected.
+1. Under **Event serialization format**, ensure that **JSON** is selected.
 
-1. Under **Encoding**, ensure **UTF-8** is selected.
+1. Under **Encoding**, ensure that **UTF-8** is selected.
+
+    You may need to scroll down to see some of the fields.
 
 1. Under **Event compression type**, ensure **None** is selected.
 
-1. To save the new input, click **Save**, then wait for the input to be created.
+1. To save the new input, click **Save**, and then wait for the input to be created.
 
     The **Inputs** list should be updated to show the new input.
 
@@ -714,41 +808,41 @@ This will enable us to verify that our route includes the following settings:
 
     The **Outputs** pane is displayed.
 
-1. On the **Outputs** pane, click **+ Add**, and select **Blob storage/Data Lake Storage Gen2** from the dropdown list.
+1. On the **Outputs** pane, click **+ Add**, and then select **Blob storage/Data Lake Storage Gen2** from the dropdown list.
 
     The **New output** pane is displayed.
 
 1. On the **New output** pane, under **Output alias**, enter `vibrationOutput`.
 
-1. Ensure **Select storage from your subscriptions** is selected.
+1. Ensure that **Select storage from your subscriptions** is selected.
 
-1. Under **Subscription**, choose the subscription you are using for this lab.
+1. Under **Subscription**, select the subscription you are using for this lab.
 
-1. Under **Storage account**, choose the storage account you created earlier - **vibrationstore** plus your initials and date.
+1. Under **Storage account**, select the storage account that you created earlier - **vibrationstore** plus your initials and date.
 
-    > [!NOTE] The **Storage account key** is automatically populated and read-only.
+    > **Note**:  The **Storage account key** is automatically populated and read-only.
 
-1. Under **Container**, ensure **Use existing** is selected and select **vibrationcontainer** from the dropdown list.
+1. Under **Container**, ensure that **Use existing** is selected and that **vibrationcontainer** is selected from the dropdown list.
 
 1. Leave the **Path pattern** blank.
 
 1. Leave the **Date format** and **Time format** at their defaults.
 
-1. Under **Event serialization format**, ensure **JSON** is selected.
+1. Under **Event serialization format**, ensure that **JSON** is selected.
 
-1. Under **Encoding**, ensure **UTF-8** is selected.
+1. Under **Encoding**, ensure that **UTF-8** is selected.
 
-1. Under **Format**, ensure **Line separated**.
+1. Under **Format**, ensure that **Line separated** is selected.
 
-    > [!NOTE] This setting stores each record as a JSON object on each line and, taken as a whole, results in a file that is an invalid JSON record. The other option, **Array**, ensures that the entire document is formatted as a JSON array where each record is an item in the array. This allows the entire file to be parsed as valid JSON.
+    > **Note**:  This setting stores each record as a JSON object on each line and, taken as a whole, results in a file that is an invalid JSON record. The other option, **Array**, ensures that the entire document is formatted as a JSON array where each record is an item in the array. This allows the entire file to be parsed as valid JSON.
 
 1. Leave **Minimum rows** blank.
 
-1. Leave **Minimum time Hours** and **Minutes** blank.
+1. Under **Maximum time**, leave **Hours** and **Minutes** blank.
 
 1. Under **Authentication mode**, ensure **Connection string** is selected.
 
-1. To create the output, click **Save**, then wait for the output to be created.
+1. To create the output, click **Save**, and then wait for the output to be created.
 
     The **Outputs** list will be updated with the new output.
 
@@ -765,7 +859,7 @@ This will enable us to verify that our route includes the following settings:
         vibrationInput
     ```
 
-1. Above the edit pane, in the toolbar, click **Save Query**.
+1. Directly above the edit pane, click **Save Query**.
 
 1. In the left hand navigation, click **Overview**.
 
@@ -773,38 +867,50 @@ This will enable us to verify that our route includes the following settings:
 
 Now for the fun part. Does the telemetry your device app is pumping out work its way along the route, and into the storage container?
 
-1. Ensure the device app you create in Visual Studio Code is still running. If not, run it in the Visual Studio Code terminal using `dotnet run`.
+1. Ensure that the device app you created in Visual Studio Code is still running. 
 
-1. In the **vibrationJob** blade's **Overview** page, click **Start**.
+    If not, run it in the Visual Studio Code terminal using `dotnet run`.
 
-1. In the **Start job** pane, leave the **Job output start time** at **Now**, and click **Start**.
+1. On the **Overview** pane of your Stream Analytics job, click **Start**.
+
+1. In the **Start job** pane, leave the **Job output start time** set to **Now**, and then click **Start**.
 
     It will take a few moments for the job to start.
 
-1. Return to the [Azure Portal](https://portal.azure.com/#home).
+1. On the Azure portal menu, click **Dashboard**.
 
-1. Select the **vibrationstore** (plus your initials and date) resource from your resource group tile.  (If it's not visible, use the **Refresh** button at the top of the resource group tile.)
+1. On your resource group tile, select the **vibrationstore** (plus your initials and date) Storage account.
 
-1. On the **Overview** page, scroll down until you can see the **Monitoring** section.
+    If your Storage account is not visible, use the **Refresh** button at the top of the resource group tile.
 
-1. Under **Monitoring**, adjacent to **Show data for last**, change the time range to **1 hour**. You should see activity in the charts.
+1. On the **Overview** pane of your Storage account, scroll down until you can see the **Monitoring** section.
 
-1. For added reassurance that all the data is getting to the account, open the storage in **Storage Explorer (preview)**. You can find links to **Storage Explorer (preview)** in multiple locations; the easiest to find is probably in the left hand navigation area.
+1. Under **Monitoring**, adjacent to **Show data for last**, change the time range to **1 hour**.
 
-    > [!NOTE] The Storage Explorer is currently in preview mode, so its exact mode of operation may change.
+    You should see activity in the charts.
 
-1. In **Storage Explorer (preview)**, under **BLOB CONTAINERS**, select **vibrationcontainer**.
+1. On the left-side navigation menu, click **Storage Explorer (preview)**.
 
-1. To view the data, you will need to navigate down a hierarchy of folders. The first folder will be named for the IoT Hub, the next will be a partition, then year, month, day and finally hour. Within the hour folder, you will see files named for the minute they were generated.
+    We can use Storage Explorer for additional reassurance that all of your data is getting to the storage account. 
 
-1. To stop the Azure Streaming Analytics job, return to your portal dashboard and select **vibrationJob**.
+    > **Note**:  The Storage Explorer is currently in preview mode, so its exact mode of operation may change.
 
-1. On the **Stream Analytics Job** page, click **Stop** and click **Yes** in the confirmation popup.
+1. In **Storage Explorer (preview)**, under **BLOB CONTAINERS**, click **vibrationcontainer**.
 
-You've traced the activity from the device app, to the hub, down the route, and to the storage container. Great progress!
+    To view the data, you will need to navigate down a hierarchy of folders. The first folder will be named for the IoT Hub, the next will be a partition, then year, month, day and finally hour. 
 
-The final part of this scenario requires that the telemetry data is sent to an EventHub for real-time analysis in PowerBI. We will cover this second part in the next lab, after you have been introduced to data visualization.
+1. In the right-hand pane, under **Name**, double-click the folder for your IoT hub, and then use double-clicks to navigate down into the hierarchy until you open the most recent hour folder.
 
-You may wish to exit the device simulator app by pressing **CTRL-C** in the Visual Studio Code Terminal.
+    Within the hour folder, you will see files named for the minute they were generated.
 
->[!IMPORTANT] Do not remove these resources until you have completed the Data Visualization module of this course.
+1. To stop the Azure Streaming Analytics job, return to your portal dashboard, and then select **vibrationJob**.
+
+1. On the **Stream Analytics Job** page, click **Stop**, and then click **Yes**.
+
+    You've traced the activity from the device app, to the hub, down the route, and to the storage container. Great progress! We will continue this scenario stream analytics in the next module when we take a quick look at data visualization.
+
+1. Switch to the Visual Studio Code window.
+
+1. At the Terminal command prompt, to exit the device simulator app, press **CTRL-C**.
+
+> **IMPORTANT**: Do not remove these resources until you have completed the Data Visualization module of this course.
