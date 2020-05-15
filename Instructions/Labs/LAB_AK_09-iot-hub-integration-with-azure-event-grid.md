@@ -36,7 +36,7 @@ This lab assumes the following Azure resources are available:
 | Resource Type  | Resource Name          |
 |----------------|------------------------|
 | Resource Group | AZ-220-RG              |
-| IoT Hub        | AZ-220-HUB-_{YOUR-ID}_ |
+| IoT Hub        | AZ-220-HUB-*{YOUR-ID}* |
 
 If these resources are not available, you will need to run the **lab09-setup.azcli** script as instructed below before moving on to Exercise 2. The script file is included in the GitHub repository that you cloned locally as part of the dev environment configuration (lab 3).
 
@@ -165,7 +165,7 @@ In this exercise, you will create a new Azure Logic App that will be triggered v
 
 1. In the **Resource group** dropdown, under **Select existing**, click **AZ-220-RG**.
 
-1. Under **Instance details**, in the **Name** field, enter **AZ-220-LogicApp-_{YOUR-ID}_**
+1. Under **Instance details**, in the **Name** field, enter **AZ-220-LogicApp-*{YOUR-ID}***
 
     For example: **AZ-220-LogicApp-CP191218**
 
@@ -187,7 +187,7 @@ In this exercise, you will create a new Azure Logic App that will be triggered v
 
 1. On your resource group tile, click the link to the Logic App resource that was just deployed.
 
-    If the **AZ-220-LogicApp-_{YOUR-ID}_** Logic app is not displayed, refresh the resource group tile.
+    If the **AZ-220-LogicApp-*{YOUR-ID}*** Logic app is not displayed, refresh the resource group tile.
 
     > **Note**: When navigating to the **Logic App** for the first time, the **Logic Apps Designer** pane will be displayed. If this page doesn't come up automatically, click **Logic app designer** under the **Development Tools** section on the **Logic App** blade.
 
@@ -299,7 +299,7 @@ In this exercise, you will create a new Azure Logic App that will be triggered v
 
     When you have completed this step you should see a message body that is similar to the following:
 
-    ![Fill out email information](./Media//LAB_AK_09-email_content.png)
+    ![Fill out email information](./media/LAB_AK_09-email_content.png)
 
 1. At the top of the designer, to save all changes to the Logic App Workflow, click **Save** .
 
@@ -325,7 +325,7 @@ In this exercise, you will create an Event Subscription within Azure IoT Hub to 
 
 1. Navigate back to your Azure portal dashboard.
 
-1. On your resource group tile, to navigate to your IoT Hub, click **AZ-220-HUB-_{YOUR-ID}_**.
+1. On your resource group tile, to navigate to your IoT Hub, click **AZ-220-HUB-*{YOUR-ID}***.
 
 1. On the **IoT Hub** blade, on the left side navigation menu, click **Events**.
 
@@ -393,13 +393,12 @@ Test your logic app by creating a new device to trigger an event notification em
 
 1. To test the event subscription filters, create additional devices using the following device IDs:
 
-    * `CheeseCave1_Building1_Thermostat`
     * `CheeseCave1_Building1_Light`
     * `CheeseCave2_Building1_Thermostat`
     * `CheeseCave2_Building2_Light`
 
     If you added the four examples total, your list of IoT devices should look like the following image:
 
-    ![IoT Hub device list](./Media/LAB_AK_09-iot-hub-device-list.png)
+    ![IoT Hub device list](./media/LAB_AK_09-iot-hub-device-list.png)
 
 1. Once you've added a few devices to your IoT hub, check your email to see which ones triggered the logic app.

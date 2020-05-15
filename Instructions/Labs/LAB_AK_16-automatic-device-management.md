@@ -62,7 +62,7 @@ This lab assumes the following Azure resources are available:
 | Resource Type | Resource Name |
 | :-- | :-- |
 | Resource Group | AZ-220-RG |
-| IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
+| IoT Hub | AZ-220-HUB-*{YOUR-ID}* |
 | IoT Device | SimulatedSolutionThermostat |
 
 If these resources are not available, you will need to run the **lab16-setup.azcli** script as instructed below before moving on to Exercise 2. The script file is included in the GitHub repository that you cloned locally as part of the dev environment configuration (lab 3).
@@ -70,7 +70,7 @@ If these resources are not available, you will need to run the **lab16-setup.azc
 >**Note:** You will need the connection string for the **SimulatedSolutionThermostat** device. If you already have this device registered with Azure IoT Hub, you can obtain the connection string by running the following command in the Azure Cloud Shell"
 >
 > ```bash
-> az iot hub device-identity show-connection-string --hub-name AZ-220-HUB-_{YOUR-ID}_ --device-id SimulatedThermostat -o tsv
+> az iot hub device-identity show-connection-string --hub-name AZ-220-HUB-*{YOUR-ID}* --device-id SimulatedThermostat -o tsv
 > ```
 
 The **lab16-setup.azcli** script is written to run in a **bash** shell environment - the easiest way to execute this is in the Azure Cloud Shell.
@@ -271,7 +271,7 @@ In this task, you will enter the code for simulating a firmware update on the de
                 Console.WriteLine(DeviceID + ": " + text);
             }
 
-            // Function to retreive firmware version from the OS/HW
+            // Function to retrieve firmware version from the OS/HW
             static string GetFirmwareVersion()
             {
                 // In here you would get the actual firmware version from the hardware. For the simulation purposes we will just send back the FWVersion variable value
@@ -369,7 +369,7 @@ In this task, you will enter the code for simulating a firmware update on the de
                 await UpdateFWUpdateStatus(client, null, null, "rebooting", null, null, DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"));
                 await Task.Delay(5 * 1000);
 
-                // On a real device you would issue a command to reboot the device. Here we are simply runing the init function
+                // On a real device you would issue a command to reboot the device. Here we are simply running the init function
                 DeviceFWVersion = fwVersion;
                 await InitDevice(client);
 

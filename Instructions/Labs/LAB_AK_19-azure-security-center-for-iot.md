@@ -171,7 +171,7 @@ In this task, you will enable **Azure Security Center for IoT** for your IoT Hub
 
 1. On the left side navigation menu, under **Security**, and then click **Overview**.
 
-    Azure Security Center for IoT Hub will be onboarded the first time a Security pane is opened. 
+    Azure Security Center for IoT Hub will be onboard the first time a Security pane is opened. 
     
     * You may be prompted click **Secure your IoT solution**.
     * After a few moments you may see the message **Onboarding succeeded for this IoT hub, please refresh for changes to take effect**.
@@ -444,12 +444,12 @@ In this lab, you will be using the symmetric key as authentication and will need
 
     Here is an example of what the command should look like:
 
-    `sudo ./InstallSecurityAgent.sh -i -aui Device -aum SymmetricKey -f ../s.key -hn CheeseCaveHub-AB20200213.azure-devices.net -di vm-device01`
+    `sudo ./InstallSecurityAgent.sh -i -aui Device -aum SymmetricKey -f ../s.key -hn AZ-220-HUB-AB20200213.azure-devices.net -di vm-device01`
 
     > **Note**: Make sure that specify your IoT Hub Hostname instead of the one listed 
     
     > **IMPORTANT**:
-    > Ensure you use the full IoT Hub host name - i.e. **CheeseCaveHub-AB20200213.azure-devices.net** for the `-hn` switch value.
+    > Ensure you use the full IoT Hub host name - i.e. **AZ-220-HUB-AB20200213.azure-devices.net** for the `-hn` switch value.
 
     This script performs the following function:
 
@@ -806,7 +806,7 @@ A device must be registered with your IoT hub before it can connect.
     > **Note**:
     When the `DeviceClient` instance is created, the **MQTT** protocol is specified with `TransportType.Mqtt` - this ensures that the Device to Cloud messages are sent using the protocol specified in the custom alert created.
 
-1. At the Terminal con=mmand prompt, to build and run the application, enter the following command:
+1. At the Terminal command prompt, to build and run the application, enter the following command:
 
     ```bash
     dotnet run

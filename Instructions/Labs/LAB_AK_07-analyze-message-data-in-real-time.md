@@ -47,7 +47,7 @@ This lab assumes the following Azure resources are available:
 | Resource Type | Resource Name |
 | :-- | :-- |
 | Resource Group | AZ-220-RG |
-| IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
+| IoT Hub | AZ-220-HUB-*{YOUR-ID}* |
 | Device ID | VibrationSensorId |
 
 If these resources are not available, you will need to run the **lab07-setup.azcli** script as instructed below before moving on to Exercise 2. The script file is included in the GitHub repository that you cloned locally as part of the dev environment configuration (lab 3).
@@ -220,7 +220,7 @@ In this exercise, you will:
 
 #### Task 2: Add Code to Send Telemetry
 
-The simualted device app that you build in this task simulates an IoT device that is monitoring the conveyor belt. The app will simulate sensor readings and report vibration sensor data every two seconds.
+The simulated device app that you build in this task simulates an IoT device that is monitoring the conveyor belt. The app will simulate sensor readings and report vibration sensor data every two seconds.
 
 1. On the Visual Studio Code **File** menu, click **Open Folder**.
 
@@ -524,7 +524,7 @@ The simualted device app that you build in this task simulates an IoT device tha
 
 1. Take a few minutes to review the code.
 
-    > **Important:** Take a few minutes to read through the comments in the code. The most important section of code for learning about IoT messages starts with the "Create two messages:" comment. You may also be interested in seeing how the math that is used to define the conveyor belt vibration levels (described within the scenario description at the begining of this lab) has worked its way into the code.
+    > **Important:** Take a few minutes to read through the comments in the code. The most important section of code for learning about IoT messages starts with the "Create two messages:" comment. You may also be interested in seeing how the math that is used to define the conveyor belt vibration levels (described within the scenario description at the beginning of this lab) has worked its way into the code.
 
 1. Replace the `<your device connection string>` (line 44) with the device connection string you saved during the previous exercise.
 

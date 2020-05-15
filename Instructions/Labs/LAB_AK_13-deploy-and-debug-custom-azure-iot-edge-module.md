@@ -51,7 +51,7 @@ This lab assumes that the following Azure resources are available:
 | Resource Type | Resource Name |
 | :-- | :-- |
 | Resource Group | AZ-220-RG |
-| IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
+| IoT Hub | AZ-220-HUB-*{YOUR-ID}* |
 
 If these resources are not available, you will need to run the **lab13-setup.azcli** script as instructed below before moving on to Exercise 2. The script file is included in the GitHub repository that you cloned locally as part of the dev environment configuration (lab 3).
 
@@ -269,18 +269,16 @@ In this exercise, you will use the Azure portal to create a new Azure Container 
 1. Open a command prompt, and then enter the following command:
 
     ```cmd/sh
-    docker login --username <username> --password-stdin <loginserver>
+    docker login <loginserver>
     ```
 
-    Replace the placeholders with the information you recorded, and enter the password you recorded when prompted.  For example:
+    Replace `<loginserver>` with the name you recorded, and enter the username and password you recorded when prompted.  For example:
 
     ```cmd/sh
-    docker login --username az220acrcah191204 --password-stdin  az220acrcah191204.azurecr.io
+    docker login az220acrcah191204.azurecr.io
     ```
 
     This command will record your credentials in the local Docker client configuration file (`$HOME/.docker/config.json`) or your operating system's secure credential storage mechanism (depending on the Docker configuration) for future use by the Docker toolset.
-
-    > **Note**: You will not be promoted to enter your password - just type it after you enter the above command. You will see your password as you enter it. Hit **enter** to submit the password. It may take a few moments before the **Login Succeeded** message is shown.
 
 Now that you have created the Azure Container Registry and authenticated your local machine against it, you can create a custom IoT Edge Module container that will be stored in the registry.
 
@@ -458,7 +456,7 @@ In this exercise, you will build and run a custom IoT Edge Module solution using
 
     If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
 
-1. On your Resource group tile, click **AZ-220-HUB-_{YOUR-ID}_**.
+1. On your Resource group tile, click **AZ-220-HUB-*{YOUR-ID}***.
 
 1. On the left hand navigation menu, under **Settings**, click **Shared access policies**.
 

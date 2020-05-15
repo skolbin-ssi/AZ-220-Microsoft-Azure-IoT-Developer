@@ -37,8 +37,8 @@ This lab assumes that the following Azure resources are available:
 | Resource Type | Resource Name |
 | :-- | :-- |
 | Resource Group | AZ-220-RG |
-| IoT Hub | AZ-220-HUB-_{YOUR-ID}_ |
-| Device Provisioning Service | AZ-220-DPS-_{YOUR-ID}_ |
+| IoT Hub | AZ-220-HUB-*{YOUR-ID}* |
+| Device Provisioning Service | AZ-220-DPS-*{YOUR-ID}* |
 
 If these resources are not available, you will need to run the **lab06-setup.azcli** script as instructed below before moving on to Exercise 2. The script file is included in the GitHub repository that you cloned locally as part of the dev environment configuration (lab 3).
 
@@ -304,7 +304,7 @@ In this exercise, you will create a new enrollment group within the Device Provi
 
     If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
 
-1. On your resource group tile, click **AZ-220-DPS-_{YOUR-ID}_**.
+1. On your resource group tile, click **AZ-220-DPS-*{YOUR-ID}***.
 
 1. On the left side of the Device Provisioning Service blade, under **Settings**, click **Manage enrollments**.
 
@@ -327,10 +327,6 @@ In this exercise, you will create a new enrollment group within the Device Provi
 1. Leave **Select how you want to assign devices to hubs** as **Evenly weighted distribution**.
 
    In large environments where you have multiple distributed hubs, this setting will control how to choose what IoT Hub should receive this device enrollment. You will have a single IoT Hub associated with the enrollment in this lab, so how you assign devices to IoT hubs doesn't really apply within this lab scenario. 
-
-1. Notice that the **AZ-220-HUB-_{YOUR-ID}_** IoT Hub is selected within the **Select the IoT hubs this device can be assigned to:** dropdown.
-
-   This field specifies the IoT Hub(s) this device can be assigned to.
 
 1. Leave **Select how you want device data to be handled on re-provisioning** as the default value of **Re-provision and migrate data**.
 
@@ -532,7 +528,7 @@ In this exercise, you will configure a simulated device written in C# to connect
 
     Notice that the `security` and `transport` objects, along with the DPS ID scope and DPS global device endpoint, are passed to `ProvisioningDeviceClient.Create` method. The ProvisioningDeviceClient object, `provClient`, will be used to register the device with the Device Provisioning Service.
 
-    Notice that `ProvisioningDeviceLogic` is instantiated by passing it the `provClient` and `security` objects. The `ProvisioningDeviceLogic` class is used to define the logic for the device (simualted device). It contains the code for simulating a running device by reading from the simulated device sensors and sending device-to-cloud messages to Azure IoT Hub. It will also be modified later to include code that updates the device according to changes to device twin desired properties that are sent to the device from the cloud.
+    Notice that `ProvisioningDeviceLogic` is instantiated by passing it the `provClient` and `security` objects. The `ProvisioningDeviceLogic` class is used to define the logic for the device (simulated device). It contains the code for simulating a running device by reading from the simulated device sensors and sending device-to-cloud messages to Azure IoT Hub. It will also be modified later to include code that updates the device according to changes to device twin desired properties that are sent to the device from the cloud.
 
 1. Scroll down to the `ProvisioningDeviceLogic` class, and then locate the `RunAsync` method.
 
@@ -569,7 +565,7 @@ In this exercise, you will configure a simulated device written in C# to connect
     await SendDeviceToCloudMessagesAsync(iotClient);
     ```
 
-    The `SendDeviceToCloudMessagesAsync` method is a seperate method that is defined further done in the code. This method contains the code that is used to read from simulated sensors and to send device-to-cloud messages to Azure IoT Hub. This method also contains a loop that continues to execute while the simulated device is running.
+    The `SendDeviceToCloudMessagesAsync` method is a separate method that is defined further done in the code. This method contains the code that is used to read from simulated sensors and to send device-to-cloud messages to Azure IoT Hub. This method also contains a loop that continues to execute while the simulated device is running.
 
 1. Still within the RunAsync method, notice the call to the `DeviceClient.CloseAsync` method.
 
@@ -737,9 +733,9 @@ In this exercise, you will run the simulated device. When the device is started 
 
 1. On the Visual Studio Code **View** menu, click **Terminal**.
 
-    This will open the integrated Terminal at the bootom of the Visual Studio Code window.
+    This will open the integrated Terminal at the bottom of the Visual Studio Code window.
 
-1. At the Terminal commnad prompt, ensure that the current directory path is set to the `/Starter` folder.
+1. At the Terminal command prompt, ensure that the current directory path is set to the `/Starter` folder.
 
     You should see something similar to the following:
 
@@ -773,7 +769,7 @@ In this exercise, you will run the simulated device. When the device is started 
 
     Scroll up to the top of the information displayed in the Terminal window.
 
-    Notice the X.509 certificate was loaded, the device was registered with the Device Provisioning Service, it was assigned to connect to the **AZ-220-HUB-_{YOUR-ID}_** IoT Hub, and the device twin desired properties are loaded.
+    Notice the X.509 certificate was loaded, the device was registered with the Device Provisioning Service, it was assigned to connect to the **AZ-220-HUB-*{YOUR-ID}*** IoT Hub, and the device twin desired properties are loaded.
 
     ```text
     localmachine:LabFiles User$ dotnet run
@@ -895,7 +891,7 @@ In this exercise, you will retire the enrollment group and its devices from both
 
     If you have more than one Azure account, be sure that you are logged in with the account that is tied to the subscription that you will be using for this course.
 
-1. On your resource group tile, to navigate to the Device Provisioning Service, click **AZ-220-DPS-_{YOUR-ID}_**.
+1. On your resource group tile, to navigate to the Device Provisioning Service, click **AZ-220-DPS-*{YOUR-ID}***.
 
 1. On the left side menu, under **Settings**, click **Manage enrollments**.
 
@@ -927,7 +923,7 @@ In this exercise, you will retire the enrollment group and its devices from both
 
 Once the enrollment group has been removed from the Device Provisioning Service (DPS), the device registration will still exist within Azure IoT Hub. To fully retire the devices, you will need to remove that registration as well.
 
-1. Within the Azure portal, on your resource group tile, click **AZ-220-HUB-_{YOUR-ID}_**.
+1. Within the Azure portal, on your resource group tile, click **AZ-220-HUB-*{YOUR-ID}***.
 
 1. On the left side of the **IoT Hub** blade, under **Explorers**, click **IoT devices**.
 

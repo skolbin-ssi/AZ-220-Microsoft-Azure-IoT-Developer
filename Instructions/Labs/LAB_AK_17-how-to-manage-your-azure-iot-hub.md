@@ -145,7 +145,7 @@ The **lab17-setup.azcli** script is written to run in a **bash** shell environme
 
     This script can take a few minutes to run. You will see JSON output as each step completes.
 
-    The script will first create a resource group named **AZ-220-RG**, then your IoT Hub named **AZ-220-HUB-{YourID}** and Device Provisioning Service named **AZ-220-DSP-{YourID}**. If the services already exist, a corresponding message will be displayed. The script will link your IoT Hub and DSP. The script will then create a storage account named **az220storage{your-id}**.
+    The script will first create a resource group named **AZ-220-RG**, then your IoT Hub named **AZ-220-HUB-{YourID}** and Device Provisioning Service named **AZ-220-DPS-{YourID}**. If the services already exist, a corresponding message will be displayed. The script will link your IoT Hub and DPS. The script will then create a storage account named **az220storage{your-id}**.
 
     You should now be ready to proceed with Exercise 2 of this lab.
 
@@ -153,7 +153,7 @@ The **lab17-setup.azcli** script is written to run in a **bash** shell environme
 
 Azure Resource logs are platform logs emitted by Azure resources that describe their internal operation. All resource logs share a common top-level schema with the flexibility for each service to emit unique properties for their own events.
 
-When you have an IoT Hub solution running in production, you will want to set up various metrics and enable diagnostic logs. Then, if a problem occurs, you have data to look at that will help you to diagnose the problem and fix it more quickly. 
+When you have an IoT Hub solution running in production, you will want to set up various metrics and enable diagnostic logs. Then, if a problem occurs, you have data to look at that will help you to diagnose the problem and fix it more quickly.
 
 In this exercise, you will enable diagnostic logs and use them to to check for errors. You will also set up some metrics to watch, and alerts that fire when the metrics hit a certain boundary.
 
@@ -227,7 +227,7 @@ In this task, you will set up various metrics to watch for when messages are sen
 
 1. To save your time settings, click **Apply**.
 
-1. Take a minute to examine the settings are used to specify the cahrt Metrics.
+1. Take a minute to examine the settings are used to specify the chart Metrics.
 
     Under the **Chart Title** and the toolbar for the chart, you will see an area to specify Metrics. 
 
@@ -636,7 +636,7 @@ The first X.509 certificates needed are CA and intermediate certificates. These 
 
 1. In the **Primary Certificate** dropdown, click **root-ca-cert**.
 
-    Verify that the **Select the IoT hubs this group can be assigned to** dropdown includes your **AZ-220-HUB-_{YOUR-ID}_** IoT Hub. This will ensure when the device is provisioned, it gets added to this IoT Hub.
+    Verify that the **Select the IoT hubs this group can be assigned to** dropdown includes your **AZ-220-HUB-*{YOUR-ID}*** IoT Hub. This will ensure when the device is provisioned, it gets added to this IoT Hub.
 
 1. In the Initial Device Twin State field, modify the `properties.desired` JSON object to include a property named `telemetryDelay` with the value of `"1"`. This will be used by the Device to set the time delay for reading sensor telemetry and sending events to IoT Hub.
 
